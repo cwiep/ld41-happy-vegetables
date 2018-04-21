@@ -1,5 +1,5 @@
-let worldWidth = 640;
-let worldHeight = 360;
+const worldWidth = 640;
+const worldHeight = 360;
 
 let app = new PIXI.Application({
     width: worldWidth,
@@ -12,7 +12,7 @@ PIXI.loader
   .add(["res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png"])
   .load(setup);
 
-const INGREDIENT_SPAWN_TIME = 300;
+const INGREDIENT_SPAWN_TIME = 100;
 const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "onion", sprite: "res/onion.png"},
 {type: "carot", sprite: "res/carot.png"},
@@ -59,8 +59,20 @@ function gameLoop(dt) {
   for (let p = 0; p < pots.length; ++p) {
     pots[p].updateStatus();
   }
+  let remove = false;
   for (let i = 0; i < ingredients.length; ++i) {
     ingredients[i].move(dt);
+    if (ingredients[i].sprite.x > worldWidth-50) {
+      ingredients[i].gone = true;
+      remove = true;
+      app.stage.removeChild(ingredients[i].sprite);
+    }
+  }
+  if (remove) {
+    var f = function (ing) {
+      return !ing.gone;
+    };
+    ingredients = ingredients.filter(f);
   }
   ingredientSpawnTime -= dt;
   if (ingredientSpawnTime <= 0) {
