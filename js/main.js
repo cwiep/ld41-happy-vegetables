@@ -12,7 +12,7 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
+  .add(["res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
   .load(setup);
 
 const CUT_TIME = 7;
@@ -22,7 +22,7 @@ const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "carot", sprite: "res/carot.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
 
-let gameState = "game";
+let gameState = "menu";
 let levelCounter = -1;
 let score = 0;
 let scoreText;
@@ -77,14 +77,14 @@ function levelClear() {
   clearScreen.interactive = true;
   clearScreen.buttonMode = true;
   clearScreen.on("pointerdown", function() {
-    console.log("hello");
     app.stage.removeChild(clearScreen);
     nextLevel();
   });
   app.stage.addChild(clearScreen)
 }
 
-function setup() {
+function startGame() {
+  gameState = "game";
   app.stage.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
   nextLevel();
   scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 14, fill : 0xffffff, align : 'center'});
@@ -92,6 +92,17 @@ function setup() {
   scoreText.y = 333;
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
+}
+
+function setup() {
+  let title = new PIXI.Sprite(PIXI.loader.resources["res/title.png"].texture)
+  title.interactive = true;
+  title.buttonMode = true;
+  title.on("pointerdown", function() {
+    app.stage.removeChild(title);
+    startGame();
+  });
+  app.stage.addChild(title);
   app.renderer.interactive = true;
   app.renderer.backgroundColor = 0xFFFFFF;
   app.renderer.view.style.position = "absolute";
