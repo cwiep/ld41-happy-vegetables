@@ -5,13 +5,18 @@ $.Ingredient = function(x, y, type, sprite) {
   this.sprite.y = y;
   this.sprite.interactive = true;
   this.sprite.buttonMode = true;
-  let me = this;
-  this.sprite.on("pointerdown", function() {
-    console.log("clicked: " + me.type);
-  });
   this.gone = false;
+  this.state = "move";
 }
 
 $.Ingredient.prototype.move = function(dt) {
-  this.sprite.x += dt * 1;
+  if (this.state === "fall") {
+    this.sprite.y += 5 * dt;
+  } else {
+    this.sprite.x += dt * 3;
+  }
+}
+
+$.Ingredient.prototype.makeFall = function() {
+  this.state = "fall";
 }
