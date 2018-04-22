@@ -12,8 +12,15 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
+  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
+  .add('bgmusic', 'res/bg.ogg')
   .load(setup);
+
+let bgMusic;
+
+PIXI.loader.load(function(loader, resources) {
+    bgMusic = resources.bgmusic.sound;
+});
 
 const CUT_TIME = 7;
 const INGREDIENT_SPAWN_TIME = 50;
@@ -22,6 +29,7 @@ const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "carot", sprite: "res/carot.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
 
+let music = true;
 let gameState = "menu";
 let levelCounter = -1;
 let score = 0;
@@ -92,17 +100,44 @@ function startGame() {
   scoreText.y = 333;
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
+  if (music) {
+    bgMusic.volume = 0.1;
+    bgMusic.play();
+  }
+}
+
+function createMusicToggle() {
+  let baseTex = PIXI.loader.resources["res/music.png"].texture.baseTexture;
+  var frames = [new PIXI.Rectangle( 0, 0, 64, 64), new PIXI.Rectangle( 64, 0, 64, 64)];
+  var tex = frames.map(function(frame) { return new PIXI.Texture(baseTex, frame); });
+  let musicToggle = new PIXI.Sprite(tex[0]);
+  musicToggle.interactive = true;
+  musicToggle.buttonMode = true;
+  musicToggle.x = 570;
+  musicToggle.y = 290;
+  musicToggle.on("pointerdown", function() {
+    music = !music;
+    if (music) {
+      musicToggle.texture = tex[0];
+    } else {
+      musicToggle.texture = tex[1];
+    }
+  });
+  return musicToggle;
 }
 
 function setup() {
-  let title = new PIXI.Sprite(PIXI.loader.resources["res/title.png"].texture)
+  let musicToggle = createMusicToggle();
+  let title = new PIXI.Sprite(PIXI.loader.resources["res/title.png"].texture);
   title.interactive = true;
   title.buttonMode = true;
   title.on("pointerdown", function() {
     app.stage.removeChild(title);
+    app.stage.removeChild(musicToggle);
     startGame();
   });
   app.stage.addChild(title);
+  app.stage.addChild(musicToggle);
   app.renderer.interactive = true;
   app.renderer.backgroundColor = 0xFFFFFF;
   app.renderer.view.style.position = "absolute";
@@ -202,7 +237,6 @@ function updatePots(dt) {
       if (score < 100) {
         text = " " + text;
       }
-
       scoreText.text = score;
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
