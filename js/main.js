@@ -22,37 +22,55 @@ const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "carot", sprite: "res/carot.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
 
+let levelCounter = -1;
 let score = 0;
 let scoreText;
 let potImage;
 let pots = [];
+let finishedPots = 0;
 let potContainer = new PIXI.Container();
 let ingredients = [];
 let ingredientContainer = new PIXI.Container();
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
 
-function addPot() {
-  let numPots = 1;
-  let potWidth = 122;
-  let area = {x: 100, y: 220, width: 540, height: 140};
-  let widthPerPot = area.width / numPots;
-  let xOffset = (widthPerPot - potWidth) / 2;
-  for (let p = 0; p < numPots; ++p) {
-    pots.push(new $.Pot(150, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+function setupPots() {
+  pots = [];
+  app.stage.removeChild(potContainer);
+  potContainer = new PIXI.Container();
+  if ($.Levels[levelCounter].pots[0]) {
+    pots.push(new $.Pot(100, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
   }
-}
-
-function setup() {
-  pots.push(new $.Pot(150, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
-  pots.push(new $.Pot(310, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
-  pots.push(new $.Pot(470, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  if ($.Levels[levelCounter].pots[1]) {
+    pots.push(new $.Pot(260, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  }
+  if ($.Levels[levelCounter].pots[2]) {
+    pots.push(new $.Pot(410, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  }
   for (let p = 0; p < pots.length; ++p) {
     potContainer.addChild(pots[p].sprite);
     potContainer.addChild(pots[p].status);
   }
-  app.stage.addChild(ingredientContainer);
   app.stage.addChild(potContainer);
+}
+
+function setupIngredients() {
+  ingredients = [];
+  app.stage.removeChild(ingredientContainer);
+  ingredientContainer = new PIXI.Container();
+  app.stage.addChild(ingredientContainer);
+  cuts = [];
+}
+
+function nextLevel() {
+  levelCounter += 1;
+  finishedPots = 0;
+  setupIngredients();
+  setupPots();
+}
+
+function setup() {
+  nextLevel();
   scoreText = new PIXI.Text("Score: " + score, {fontFamily : 'OpenSans', fontSize: 12, fill : 0x000000, align : 'center'});
   scoreText.x = 10;
   scoreText.y = 330;
@@ -66,7 +84,7 @@ function setup() {
 
 function buildRandomIngredient() {
   let ing = getRandom(INGREDIENTS);
-  return new $.Ingredient(10, 10, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture));
+  return new $.Ingredient(10, 10, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture), $.Levels[levelCounter]);
 }
 
 function removeIngredientImage(ing) {
@@ -102,7 +120,12 @@ function updateIngredients(dt) {
   for (let i = 0; i < ingredients.length; ++i) {
     ingredients[i].move(dt);
     if (ingredients[i].sprite.x > worldWidth) {
-      ingredients[i].moveToBottom();
+      if ($.Levels[levelCounter].bottomLane) {
+        ingredients[i].moveToBottom();
+      } else {
+        removeIngredientImage(ingredients[i]);
+        remove = true;
+      }
     } else if (ingredients[i].sprite.y > worldHeight-50 || ingredients[i].sprite.x < 0) {
       // remove ingredients when outside of screen
       removeIngredientImage(ingredients[i]);
@@ -111,13 +134,14 @@ function updateIngredients(dt) {
       // check collision with every pot
       for (let p = 0; p < pots.length; ++p) {
         if (!ingredients[i].gone && collide(ingredients[i].sprite, pots[p].sprite)) {
-          removeIngredientImage(ingredients[i]);
-          remove = true;
-          let needed = pots[p].check(ingredients[i]);
-          var soundURL = jsfxr([0,,0.1812,,0.1349,0.4524,,0.2365,,,,,,0.0819,,,,,1,,,,,0.5]);
-          var player = new Audio();
-          player.src = soundURL;
-          player.play();
+          if (pots[p].check(ingredients[i])) {
+            removeIngredientImage(ingredients[i]);
+            remove = true;
+            //var soundURL = jsfxr([0,,0.1812,,0.1349,0.4524,,0.2365,,,,,,0.0819,,,,,1,,,,,0.5]);
+            //var player = new Audio();
+            //player.src = soundURL;
+            //player.play();
+          }
         }
       }
     }
@@ -144,6 +168,10 @@ function updatePots(dt) {
       app.stage.removeChild(pots[p].status);
       pots[p].reset();
       app.stage.addChild(pots[p].status);
+      ++finishedPots;
+      if (finishedPots >= $.Levels[levelCounter].targetPots) {
+        nextLevel();
+      }
     }
   }
 }
@@ -170,6 +198,7 @@ function gameLoop(dt) {
   updateIngredients(dt);
   updatePots(dt);
   updateCuts(dt);
+
 }
 
 // attach the created app to the HTML document - create the canvas element

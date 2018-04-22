@@ -1,5 +1,5 @@
 // ingredients that move across the screen and can be cut
-$.Ingredient = function(x, y, type, sprite) {
+$.Ingredient = function(x, y, type, sprite, level) {
   this.type = type;
   this.sprite = sprite;
   this.sprite.x = x;
@@ -8,15 +8,17 @@ $.Ingredient = function(x, y, type, sprite) {
   this.sprite.buttonMode = true;
   this.gone = false;
   this.state = "move_top";
+  this.speed = level.speed;
+  this.bottomLaneEnabled = level.bottomLane;
 }
 
 $.Ingredient.prototype.move = function(dt) {
   if (this.state === "fall") {
     this.sprite.y += 5 * dt;
-  } else if (this.state === "move_bottom"){
-    this.sprite.x -= dt * 3;
+  } else if (this.bottomLaneEnabled && this.state === "move_bottom"){
+    this.sprite.x -= dt * this.speed;
   } else {
-    this.sprite.x += dt * 3;
+    this.sprite.x += dt * this.speed;
   }
 }
 
@@ -25,6 +27,8 @@ $.Ingredient.prototype.makeFall = function() {
 }
 
 $.Ingredient.prototype.moveToBottom = function() {
-  this.state = "move_bottom";
-  this.sprite.y += 150;
+  if (this.state !== "move_bottom") {
+    this.state = "move_bottom";
+    this.sprite.y += 130;
+  }
 }
