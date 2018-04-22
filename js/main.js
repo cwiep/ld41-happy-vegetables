@@ -88,7 +88,7 @@ function startGame() {
   app.stage.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
   nextLevel();
   scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 14, fill : 0xffffff, align : 'center'});
-  scoreText.x = 15;
+  scoreText.x = 37;
   scoreText.y = 333;
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
@@ -191,7 +191,13 @@ function updatePots(dt) {
     pots[p].updateStatus();
     if (pots[p].isDone()) {
       score += 1;
-      scoreText.text = "Score: " + score;
+      if (score < 10) {
+        score = " " + score;
+      }
+      if (score < 100) {
+        score = " " + score;
+      }
+      scoreText.text = score;
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
       pots[p].reset();
