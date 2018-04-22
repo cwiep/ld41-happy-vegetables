@@ -191,12 +191,14 @@ function updatePots(dt) {
     pots[p].updateStatus();
     if (pots[p].isDone()) {
       score += 1;
+      let text = score;
       if (score < 10) {
-        score = " " + score;
+        text = " " + text;
       }
       if (score < 100) {
-        score = " " + score;
+        text = " " + text;
       }
+
       scoreText.text = score;
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
