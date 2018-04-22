@@ -14,12 +14,17 @@ let app = new PIXI.Application({
 PIXI.loader
   .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
   .add('bgmusic', 'res/bg.ogg')
+  .add("cutSound", "res/cut.ogg")
   .load(setup);
 
 let bgMusic;
+let cutSound;
 
 PIXI.loader.load(function(loader, resources) {
     bgMusic = resources.bgmusic.sound;
+    bgMusic.volume = 0.05;
+    cutSound = resources.cutSound.sound;
+    cutSound.volume = 0.05;
 });
 
 const CUT_TIME = 7;
@@ -101,7 +106,6 @@ function startGame() {
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
   if (music) {
-    bgMusic.volume = 0.1;
     bgMusic.play();
   }
 }
@@ -167,6 +171,7 @@ function spawnIngredient() {
     }
     app.stage.addChild(cut);
     cuts.push({t: CUT_TIME, sprite: cut, rem: false});
+    cutSound.play();
   });
   ing.sprite.scale.x *= 0.75;
   ing.sprite.scale.y *= 0.75;
