@@ -98,7 +98,11 @@ function updateIngredients(dt) {
         if (collide(ingredients[i].sprite, pots[p].sprite)) {
           removeIngredient(ingredients[i]);
           remove = true;
-          pots[p].check(ingredients[i])
+          let needed = pots[p].check(ingredients[i]);
+          var soundURL = jsfxr([0,,0.1812,,0.1349,0.4524,,0.2365,,,,,,0.0819,,,,,1,,,,,0.5]);
+          var player = new Audio();
+          player.src = soundURL;
+          player.play();
         }
       }
     }
