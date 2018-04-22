@@ -32,6 +32,17 @@ let ingredientContainer = new PIXI.Container();
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
 
+function addPot() {
+  let numPots = 1;
+  let potWidth = 122;
+  let area = {x: 100, y: 220, width: 540, height: 140};
+  let widthPerPot = area.width / numPots;
+  let xOffset = (widthPerPot - potWidth) / 2;
+  for (let p = 0; p < numPots; ++p) {
+    pots.push(new $.Pot(150, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  }
+}
+
 function setup() {
   pots.push(new $.Pot(150, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
   pots.push(new $.Pot(310, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
@@ -58,7 +69,7 @@ function buildRandomIngredient() {
   return new $.Ingredient(10, 10, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture));
 }
 
-function removeIngredient(ing) {
+function removeIngredientImage(ing) {
   ing.gone = true;
   ingredientContainer.removeChild(ing.sprite);
 }
@@ -73,6 +84,8 @@ function spawnIngredient() {
     app.stage.addChild(cut);
     cuts.push({t: CUT_TIME, sprite: cut, rem: false});
   });
+  ing.sprite.scale.x *= 0.75;
+  ing.sprite.scale.y *= 0.75;
   ingredientContainer.addChild(ing.sprite);
   ingredients.push(ing);
 }
@@ -88,15 +101,17 @@ function updateIngredients(dt) {
   let remove = false;
   for (let i = 0; i < ingredients.length; ++i) {
     ingredients[i].move(dt);
-    if (ingredients[i].sprite.x > worldWidth-50 || ingredients[i].sprite.y > worldHeight-50) {
+    if (ingredients[i].sprite.x > worldWidth) {
+      ingredients[i].moveToBottom();
+    } else if (ingredients[i].sprite.y > worldHeight-50 || ingredients[i].sprite.x < 0) {
       // remove ingredients when outside of screen
-      removeIngredient(ingredients[i]);
+      removeIngredientImage(ingredients[i]);
       remove = true;
     } else {
       // check collision with every pot
       for (let p = 0; p < pots.length; ++p) {
-        if (collide(ingredients[i].sprite, pots[p].sprite)) {
-          removeIngredient(ingredients[i]);
+        if (!ingredients[i].gone && collide(ingredients[i].sprite, pots[p].sprite)) {
+          removeIngredientImage(ingredients[i]);
           remove = true;
           let needed = pots[p].check(ingredients[i]);
           var soundURL = jsfxr([0,,0.1812,,0.1349,0.4524,,0.2365,,,,,,0.0819,,,,,1,,,,,0.5]);

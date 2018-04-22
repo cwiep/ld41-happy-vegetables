@@ -13,10 +13,10 @@ $.Pot.prototype.initIngredients = function() {
   for (let i = 0; i < 3; ++i) {
     let randType = getRandom($.INGREDIENT_TYPES);
     let sprite = new PIXI.Sprite(PIXI.loader.resources[$.INGREDIENT_IMAGES[randType]].texture)
-    sprite.x = this.sprite.x + 10 + i * 30;
+    sprite.x = this.sprite.x + 15 + i * 30;
     sprite.y = this.sprite.y + this.sprite.height;
-    sprite.scale.x *= 0.5;
-    sprite.scale.y *= 0.5;
+    sprite.scale.x *= 0.4;
+    sprite.scale.y *= 0.4;
     this.ingredients.push({type: randType, done: false, sprite: sprite})
     this.status.addChild(sprite);
   }

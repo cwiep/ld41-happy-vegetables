@@ -7,12 +7,14 @@ $.Ingredient = function(x, y, type, sprite) {
   this.sprite.interactive = true;
   this.sprite.buttonMode = true;
   this.gone = false;
-  this.state = "move";
+  this.state = "move_top";
 }
 
 $.Ingredient.prototype.move = function(dt) {
   if (this.state === "fall") {
     this.sprite.y += 5 * dt;
+  } else if (this.state === "move_bottom"){
+    this.sprite.x -= dt * 3;
   } else {
     this.sprite.x += dt * 3;
   }
@@ -20,4 +22,9 @@ $.Ingredient.prototype.move = function(dt) {
 
 $.Ingredient.prototype.makeFall = function() {
   this.state = "fall";
+}
+
+$.Ingredient.prototype.moveToBottom = function() {
+  this.state = "move_bottom";
+  this.sprite.y += 150;
 }
