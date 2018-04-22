@@ -1,3 +1,6 @@
+$.INGREDIENT_IMAGES = {"potato": "res/potato.png", "onion": "res/onion.png", "carot": "res/carot.png", "brocoli": "res/brocoli.png"}
+$.INGREDIENT_TYPES = ["potato", "onion", "carot", "brocoli"];
+
 const worldWidth = 640;
 const worldHeight = 360;
 
@@ -29,14 +32,10 @@ let ingredientContainer = new PIXI.Container();
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
 
-function getRandomIngredients() {
-   return [{type: "potato", done: false}, {type: "onion", done: false}, {type: "potato", done: false}];
-}
-
 function setup() {
-  pots.push(new $.Pot(150, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
-  pots.push(new $.Pot(310, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
-  pots.push(new $.Pot(470, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  pots.push(new $.Pot(150, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  pots.push(new $.Pot(310, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
+  pots.push(new $.Pot(470, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
   for (let p = 0; p < pots.length; ++p) {
     potContainer.addChild(pots[p].sprite);
     potContainer.addChild(pots[p].status);
@@ -52,10 +51,6 @@ function setup() {
   app.renderer.backgroundColor = 0xFFFFFF;
   app.renderer.view.style.position = "absolute";
   app.renderer.view.style.display = "block";
-}
-
-function getRandom(array) {
-  return array[Math.floor(Math.random() * array.length)];
 }
 
 function buildRandomIngredient() {
@@ -127,7 +122,9 @@ function updatePots(dt) {
     if (pots[p].isDone()) {
       score += 1;
       scoreText.text = "Score: " + score;
+      app.stage.removeChild(pots[p].status);
       pots[p].reset();
+      app.stage.addChild(pots[p].status);
     }
   }
 }

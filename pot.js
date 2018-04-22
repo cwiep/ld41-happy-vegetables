@@ -1,18 +1,29 @@
-$.Pot = function(x, y, ingredients, sprite) {
-  this.ingredients = ingredients;
+$.Pot = function(x, y, sprite) {
+  this.ingredients = [];
   this.sprite = sprite;
   this.sprite.x = x;
   this.sprite.y = y;
-  this.status = new PIXI.Text("", {fontFamily : 'OpenSans', fontSize: 12, fill : 0xff1010, align : 'center'});
-  this.status.x = x;
-  this.status.y = y + this.sprite.height;
+  this.status = new PIXI.Container();
   this.reset();
 }
 
-$.Pot.prototype.reset = function() {
-  for (let i=0; i<this.ingredients.length; ++i) {
-    this.ingredients[i].done = false;
+$.Pot.prototype.initIngredients = function() {
+  this.ingredients = [];
+  this.status = new PIXI.Container();
+  for (let i = 0; i < 3; ++i) {
+    let randType = getRandom($.INGREDIENT_TYPES);
+    let sprite = new PIXI.Sprite(PIXI.loader.resources[$.INGREDIENT_IMAGES[randType]].texture)
+    sprite.x = this.sprite.x + 10 + i * 30;
+    sprite.y = this.sprite.y + this.sprite.height;
+    sprite.scale.x *= 0.5;
+    sprite.scale.y *= 0.5;
+    this.ingredients.push({type: randType, done: false, sprite: sprite})
+    this.status.addChild(sprite);
   }
+}
+
+$.Pot.prototype.reset = function() {
+  this.initIngredients();
   this.updateStatus();
 }
 
@@ -30,15 +41,12 @@ $.Pot.prototype.check = function(ingredient) {
 }
 
 $.Pot.prototype.updateStatus = function() {
-  let status = "";
-  for (let i=0; i<this.ingredients.length; ++i) {
-    if (this.ingredients[i].done) {
-      status += "[" + this.ingredients[i].type + "] ";
-    } else {
-      status += this.ingredients[i].type + " ";
+  for (let i = 0; i < this.ingredients.length; ++i) {
+    let ing = this.ingredients[i];
+    if (ing.done) {
+      this.status.removeChild(ing.sprite);
     }
   }
-  this.status.text = status;
 }
 
 $.Pot.prototype.isDone = function() {

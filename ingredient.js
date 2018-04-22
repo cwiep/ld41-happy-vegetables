@@ -1,3 +1,4 @@
+// ingredients that move across the screen and can be cut
 $.Ingredient = function(x, y, type, sprite) {
   this.type = type;
   this.sprite = sprite;
