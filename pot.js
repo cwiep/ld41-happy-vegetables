@@ -1,12 +1,18 @@
 $.Pot = function(x, y, ingredients, sprite) {
   this.ingredients = ingredients;
-  this.finished = false;
   this.sprite = sprite;
   this.sprite.x = x;
   this.sprite.y = y;
   this.status = new PIXI.Text("", {fontFamily : 'OpenSans', fontSize: 12, fill : 0xff1010, align : 'center'});
   this.status.x = x;
   this.status.y = y + this.sprite.height;
+  this.reset();
+}
+
+$.Pot.prototype.reset = function() {
+  for (let i=0; i<this.ingredients.length; ++i) {
+    this.ingredients[i].done = false;
+  }
   this.updateStatus();
 }
 
