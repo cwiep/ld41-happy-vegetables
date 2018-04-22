@@ -12,7 +12,7 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png"])
+  .add(["res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
   .load(setup);
 
 const CUT_TIME = 7;
@@ -22,6 +22,7 @@ const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "carot", sprite: "res/carot.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
 
+let gameState = "game";
 let levelCounter = -1;
 let score = 0;
 let scoreText;
@@ -67,13 +68,28 @@ function nextLevel() {
   finishedPots = 0;
   setupIngredients();
   setupPots();
+  gameState = "game";
+}
+
+function levelClear() {
+  gameState = "levelClear";
+  let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/levelclear.png"].texture);
+  clearScreen.interactive = true;
+  clearScreen.buttonMode = true;
+  clearScreen.on("pointerdown", function() {
+    console.log("hello");
+    app.stage.removeChild(clearScreen);
+    nextLevel();
+  });
+  app.stage.addChild(clearScreen)
 }
 
 function setup() {
+  app.stage.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
   nextLevel();
-  scoreText = new PIXI.Text("Score: " + score, {fontFamily : 'OpenSans', fontSize: 12, fill : 0x000000, align : 'center'});
-  scoreText.x = 10;
-  scoreText.y = 330;
+  scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 14, fill : 0xffffff, align : 'center'});
+  scoreText.x = 15;
+  scoreText.y = 333;
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
   app.renderer.interactive = true;
@@ -84,7 +100,7 @@ function setup() {
 
 function buildRandomIngredient() {
   let ing = getRandom(INGREDIENTS);
-  return new $.Ingredient(10, 10, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture), $.Levels[levelCounter]);
+  return new $.Ingredient(10, 20, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture), $.Levels[levelCounter]);
 }
 
 function removeIngredientImage(ing) {
@@ -165,12 +181,13 @@ function updatePots(dt) {
     if (pots[p].isDone()) {
       score += 1;
       scoreText.text = "Score: " + score;
-      app.stage.removeChild(pots[p].status);
-      pots[p].reset();
-      app.stage.addChild(pots[p].status);
+      potContainer.removeChild(pots[p].status)
       ++finishedPots;
+      pots[p].reset();
+      potContainer.addChild(pots[p].status)
       if (finishedPots >= $.Levels[levelCounter].targetPots) {
-        nextLevel();
+        levelClear();
+        break;
       }
     }
   }
@@ -195,10 +212,11 @@ function updateCuts(dt) {
 }
 
 function gameLoop(dt) {
-  updateIngredients(dt);
-  updatePots(dt);
-  updateCuts(dt);
-
+  if (gameState === "game") {
+    updateIngredients(dt);
+    updatePots(dt);
+    updateCuts(dt);
+  }
 }
 
 // attach the created app to the HTML document - create the canvas element
