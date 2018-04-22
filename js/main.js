@@ -126,6 +126,10 @@ function spawnIngredient() {
     let cut = new PIXI.Sprite(PIXI.loader.resources["res/cut.png"].texture);
     cut.x = ing.sprite.x;
     cut.y = ing.sprite.y;
+    if (Math.random() > 0.5) {
+      cut.anchor.x = 1;
+      cut.scale.x *= -1;
+    }
     app.stage.addChild(cut);
     cuts.push({t: CUT_TIME, sprite: cut, rem: false});
   });
