@@ -14,9 +14,9 @@ $.Pot = function(x, y, ingredients, sprite) {
 // checks whether ingredient is needed and marks appropriate one as done
 // returns true, if ingredient was needed, false otherwise
 $.Pot.prototype.check = function(ingredient) {
-  for (let i=0; i<ingredients.length; ++i) {
-    if (ingredients[i].type === ingredient.type && !ingredients[i].done) {
-      ingredients[i].done = true;
+  for (let i=0; i<this.ingredients.length; ++i) {
+    if (!this.ingredients[i].done && this.ingredients[i].type === ingredient.type) {
+      this.ingredients[i].done = true;
       return true;
     }
   }
@@ -33,4 +33,13 @@ $.Pot.prototype.updateStatus = function() {
     }
   }
   this.status.text = status;
+}
+
+$.Pot.prototype.isDone = function() {
+  for (let i=0; i<this.ingredients.length; ++i) {
+    if (!this.ingredients[i].done) {
+      return false;
+    }
+  }
+  return true;
 }

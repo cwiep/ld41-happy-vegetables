@@ -19,9 +19,10 @@ const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
 
 let potImage;
+let pots = [];
+let potContainer = new PIXI.Container();
 let ingredients = [];
 let ingredientContainer = new PIXI.Container();
-let pots = [];
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 
 function getRandomIngredients() {
@@ -32,7 +33,6 @@ function setup() {
   pots.push(new $.Pot(150, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
   pots.push(new $.Pot(310, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
   pots.push(new $.Pot(470, 240, getRandomIngredients(), new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
-  let potContainer = new PIXI.Container();
   for (let p = 0; p < pots.length; ++p) {
     potContainer.addChild(pots[p].sprite);
     potContainer.addChild(pots[p].status);
@@ -69,16 +69,30 @@ function spawnIngredient() {
   ingredients.push(ing);
 }
 
+function collide(rect1, rect2) {
+  return rect1.x < rect2.x + rect2.width &&
+   rect1.x + rect1.width > rect2.x &&
+   rect1.y < rect2.y + rect2.height &&
+   rect1.height + rect1.y > rect2.y;
+}
+
 function gameLoop(dt) {
-  for (let p = 0; p < pots.length; ++p) {
-    pots[p].updateStatus();
-  }
   let remove = false;
   for (let i = 0; i < ingredients.length; ++i) {
     ingredients[i].move(dt);
     if (ingredients[i].sprite.x > worldWidth-50 || ingredients[i].sprite.y > worldHeight-50) {
+      // remove ingredients when outside of screen
       removeIngredient(ingredients[i]);
       remove = true;
+    } else {
+      // check collision with every pot
+      for (let p = 0; p < pots.length; ++p) {
+        if (collide(ingredients[i].sprite, pots[p].sprite)) {
+          removeIngredient(ingredients[i]);
+          remove = true;
+          pots[p].check(ingredients[i])
+        }
+      }
     }
   }
   if (remove) {
@@ -91,6 +105,12 @@ function gameLoop(dt) {
   if (ingredientSpawnTime <= 0) {
     ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
     spawnIngredient();
+  }
+  for (let p = 0; p < pots.length; ++p) {
+    pots[p].updateStatus();
+    if (pots[p].isDone()) {
+      console.log(pots[p] +"is done");
+    }
   }
 }
 
