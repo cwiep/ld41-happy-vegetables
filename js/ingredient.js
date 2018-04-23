@@ -14,7 +14,7 @@ $.Ingredient = function(x, y, type, sprite, level) {
 
 $.Ingredient.prototype.move = function(dt) {
   if (this.state === "fall") {
-    this.sprite.y += 5 * dt;
+    this.sprite.y += 0.6 * dt;
   } else if (this.bottomLaneEnabled && this.state === "move_bottom"){
     this.sprite.x -= dt * this.speed;
   } else {

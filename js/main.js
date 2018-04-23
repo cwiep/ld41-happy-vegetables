@@ -12,7 +12,7 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png"])
+  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
   .add('bgmusic', 'res/bg.ogg')
   .add("cutSound", "res/cut.ogg")
   .add("blubSound", "res/blub.ogg")
@@ -32,8 +32,9 @@ PIXI.loader.load(function(loader, resources) {
     blubSound.volume = 0.05;
 });
 
-const CUT_TIME = 7;
-const INGREDIENT_SPAWN_TIME = 50;
+const MONSTER_TIME = 3000;
+const CUT_TIME = 300;
+const INGREDIENT_SPAWN_TIME = 1000;
 const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
 {type: "onion", sprite: "res/onion.png"},
 {type: "carot", sprite: "res/carot.png"},
@@ -54,6 +55,8 @@ let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
 let scene;
 let potText;
+let monster;
+let monsterCounter;
 
 // this can only happen once!
 app.ticker.add(dt => gameLoop(dt));
@@ -86,23 +89,42 @@ function setupIngredients() {
   cuts = [];
 }
 
+function addMonster() {
+  if (monster) {
+    scene.removeChild(monster.sprite);
+  }
+  if ($.Levels[levelCounter].monster) {
+    monster = new $.Monster(400, 102);
+    scene.addChild(monster.sprite);
+  }
+}
+
 function nextLevel() {
   levelCounter += 1;
   if (levelCounter >= $.Levels.length) {
     // finish game
     gameState = "won";
-    scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture));
+    scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/win.png"].texture));
+    let winScore = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 36, fill : 0xffffff, align : 'center'});
+    winScore.x = 300;
+    winScore.y = 200;
+    scene.addChild(winScore);
   } else {
     // load normal level
     finishedPots = 0;
     potText.text = $.Levels[levelCounter].targetPots;
     setupIngredients();
     setupPots();
+    addMonster();
     gameState = "game";
   }
 }
 
 function levelClear() {
+  for (let c = 0; c < cuts.length; ++c) {
+    scene.removeChild(cuts[c].sprite);
+  }
+  cuts = [];
   gameState = "levelClear";
   let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/levelclear.png"].texture);
   clearScreen.interactive = true;
@@ -129,6 +151,7 @@ function gameOver() {
 
 function startGame() {
   gameState = "game";
+  levelCounter = -1;
   score = 0;
   scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture));
   potText = new PIXI.Text("0", {fontFamily : 'OpenSans', fontSize: 18, fill : 0x000000, align : 'center'});
@@ -332,10 +355,14 @@ function updateCuts(dt) {
 }
 
 function gameLoop(dt) {
+  let deltaMs = app.ticker.elapsedMS;
   if (gameState === "game") {
-    updateIngredients(dt);
-    updatePots(dt);
-    updateCuts(dt);
+    updateIngredients(deltaMs);
+    updatePots(deltaMs);
+    updateCuts(deltaMs);
+    if (monster) {
+      monster.update(deltaMs);
+    }
     if (score < 0) {
       gameOver();
     }
