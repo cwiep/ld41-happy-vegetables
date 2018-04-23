@@ -15,16 +15,21 @@ PIXI.loader
   .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png"])
   .add('bgmusic', 'res/bg.ogg')
   .add("cutSound", "res/cut.ogg")
+  .add("blubSound", "res/blub.ogg")
   .load(setup);
 
 let bgMusic;
 let cutSound;
+let blubSound;
 
 PIXI.loader.load(function(loader, resources) {
     bgMusic = resources.bgmusic.sound;
     bgMusic.volume = 0.05;
+    bgMusic.loop = true;
     cutSound = resources.cutSound.sound;
     cutSound.volume = 0.05;
+    blubSound = resources.blubSound.sound;
+    blubSound.volume = 0.05;
 });
 
 const CUT_TIME = 7;
@@ -219,6 +224,7 @@ function updateIngredients(dt) {
           if (pots[p].check(ingredients[i])) {
             removeIngredientImage(ingredients[i]);
             remove = true;
+            blubSound.play();
           }
         }
       }
