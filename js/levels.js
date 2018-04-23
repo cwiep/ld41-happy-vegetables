@@ -3,7 +3,7 @@ $.Levels = [
     pots: [false, true, false],
     bottomLane: false,
     speed: 0.15,
-    targetPots: 5,
+    targetPots: 3,
     monster: false
   },
   {

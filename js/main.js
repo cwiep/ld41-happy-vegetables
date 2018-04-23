@@ -35,7 +35,12 @@ PIXI.loader.load(function(loader, resources) {
 const MONSTER_TIME = 3000;
 const CUT_TIME = 300;
 const INGREDIENT_SPAWN_TIME = 1000;
+// this is a hack to avoid the edge probabilities...
 const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
+{type: "onion", sprite: "res/onion.png"},
+{type: "carot", sprite: "res/carot.png"},
+{type: "brocoli", sprite: "res/brocoli.png"},
+{type: "potato", sprite: "res/potato.png"},
 {type: "onion", sprite: "res/onion.png"},
 {type: "carot", sprite: "res/carot.png"},
 {type: "brocoli", sprite: "res/brocoli.png"}];
