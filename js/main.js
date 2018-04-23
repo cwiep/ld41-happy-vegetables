@@ -12,7 +12,7 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png"])
+  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png"])
   .add('bgmusic', 'res/bg.ogg')
   .add("cutSound", "res/cut.ogg")
   .add("blubSound", "res/blub.ogg")
@@ -52,10 +52,14 @@ let ingredients = [];
 let ingredientContainer = new PIXI.Container();
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
+let scene;
+
+// this can only happen once!
+app.ticker.add(dt => gameLoop(dt));
 
 function setupPots() {
   pots = [];
-  app.stage.removeChild(potContainer);
+  scene.removeChild(potContainer);
   potContainer = new PIXI.Container();
   if ($.Levels[levelCounter].pots[0]) {
     pots.push(new $.Pot(100, 220, new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)));
@@ -70,14 +74,14 @@ function setupPots() {
     potContainer.addChild(pots[p].sprite);
     potContainer.addChild(pots[p].status);
   }
-  app.stage.addChild(potContainer);
+  scene.addChild(potContainer);
 }
 
 function setupIngredients() {
   ingredients = [];
-  app.stage.removeChild(ingredientContainer);
+  scene.removeChild(ingredientContainer);
   ingredientContainer = new PIXI.Container();
-  app.stage.addChild(ingredientContainer);
+  scene.addChild(ingredientContainer);
   cuts = [];
 }
 
@@ -95,21 +99,34 @@ function levelClear() {
   clearScreen.interactive = true;
   clearScreen.buttonMode = true;
   clearScreen.on("pointerdown", function() {
-    app.stage.removeChild(clearScreen);
+    scene.removeChild(clearScreen);
     nextLevel();
   });
-  app.stage.addChild(clearScreen)
+  scene.addChild(clearScreen)
+}
+
+function gameOver() {
+  gameState = "gameOver";
+  bgMusic.stop();
+  let endScreen = new PIXI.Sprite(PIXI.loader.resources["res/gameover.png"].texture);
+  endScreen.interactive = true;
+  endScreen.buttonMode = true;
+  endScreen.on("pointerdown", function() {
+    scene.removeChild(endScreen);
+    setup();
+  });
+  scene.addChild(endScreen)
 }
 
 function startGame() {
   gameState = "game";
-  app.stage.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
+  score = 0;
+  scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
   nextLevel();
   scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 18, fill : 0xffffff, align : 'center'});
   scoreText.x = 30;
   scoreText.y = 325;
-  app.stage.addChild(scoreText);
-  app.ticker.add(dt => gameLoop(dt));
+  scene.addChild(scoreText);
   if (music) {
     bgMusic.play();
   }
@@ -136,6 +153,9 @@ function createMusicToggle() {
 }
 
 function setup() {
+  gameState = "menu";
+  app.stage.removeChild(scene);
+  scene = new PIXI.Container();
   let musicToggle = createMusicToggle();
   let title = new PIXI.Sprite(PIXI.loader.resources["res/title.png"].texture);
   let startButton = new PIXI.Sprite(PIXI.loader.resources["res/startbutton.png"].texture);
@@ -144,14 +164,15 @@ function setup() {
   startButton.x = 110;
   startButton.y = 160;
   startButton.on("pointerdown", function() {
-    app.stage.removeChild(title);
-    app.stage.removeChild(musicToggle);
-    app.stage.removeChild(startButton);
+    scene.removeChild(title);
+    scene.removeChild(musicToggle);
+    scene.removeChild(startButton);
     startGame();
   });
-  app.stage.addChild(title);
-  app.stage.addChild(startButton);
-  app.stage.addChild(musicToggle);
+  scene.addChild(title);
+  scene.addChild(startButton);
+  scene.addChild(musicToggle);
+  app.stage.addChild(scene);
   app.renderer.interactive = true;
   app.renderer.backgroundColor = 0xFFFFFF;
   app.renderer.view.style.position = "absolute";
@@ -179,7 +200,7 @@ function spawnIngredient() {
       cut.anchor.x = 1;
       cut.scale.x *= -1;
     }
-    app.stage.addChild(cut);
+    scene.addChild(cut);
     cuts.push({t: CUT_TIME, sprite: cut, rem: false});
     cutSound.play();
   });
@@ -279,7 +300,7 @@ function updateCuts(dt) {
     if (cuts[c].t <= 0) {
       cuts[c].rem = true;
       remove = true;
-      app.stage.removeChild(cuts[c].sprite);
+      scene.removeChild(cuts[c].sprite);
     }
   }
   if (remove) {
@@ -295,6 +316,9 @@ function gameLoop(dt) {
     updateIngredients(dt);
     updatePots(dt);
     updateCuts(dt);
+    if (score < 0) {
+      gameOver();
+    }
   }
 }
 
