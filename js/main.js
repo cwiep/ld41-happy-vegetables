@@ -53,6 +53,7 @@ let ingredientContainer = new PIXI.Container();
 let ingredientSpawnTime = INGREDIENT_SPAWN_TIME;
 let cuts = [];
 let scene;
+let potText;
 
 // this can only happen once!
 app.ticker.add(dt => gameLoop(dt));
@@ -88,6 +89,7 @@ function setupIngredients() {
 function nextLevel() {
   levelCounter += 1;
   finishedPots = 0;
+  potText.text = $.Levels[levelCounter].targetPots;
   setupIngredients();
   setupPots();
   gameState = "game";
@@ -121,12 +123,22 @@ function gameOver() {
 function startGame() {
   gameState = "game";
   score = 0;
-  scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
+  scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture));
+  potText = new PIXI.Text("0", {fontFamily : 'OpenSans', fontSize: 18, fill : 0x000000, align : 'center'});
+  potText.x = 70;
+  potText.y = 278;
+  scene.addChild(potText);
   nextLevel();
   scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 18, fill : 0xffffff, align : 'center'});
   scoreText.x = 30;
   scoreText.y = 325;
   scene.addChild(scoreText);
+  let potCounterSprite = new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)
+  potCounterSprite.x = 25;
+  potCounterSprite.y = 270;
+  potCounterSprite.scale.x *= 0.3;
+  potCounterSprite.scale.y *= 0.3;
+  scene.addChild(potCounterSprite);
   if (music) {
     bgMusic.play();
   }
@@ -283,6 +295,7 @@ function updatePots(dt) {
       updateScoreDisplay();
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
+      potText.text = $.Levels[levelCounter].targetPots - finishedPots;
       pots[p].reset();
       potContainer.addChild(pots[p].status)
       if (finishedPots >= $.Levels[levelCounter].targetPots) {
