@@ -88,11 +88,18 @@ function setupIngredients() {
 
 function nextLevel() {
   levelCounter += 1;
-  finishedPots = 0;
-  potText.text = $.Levels[levelCounter].targetPots;
-  setupIngredients();
-  setupPots();
-  gameState = "game";
+  if (levelCounter >= $.Levels.length) {
+    // finish game
+    gameState = "won";
+    scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture));
+  } else {
+    // load normal level
+    finishedPots = 0;
+    potText.text = $.Levels[levelCounter].targetPots;
+    setupIngredients();
+    setupPots();
+    gameState = "game";
+  }
 }
 
 function levelClear() {
@@ -104,7 +111,7 @@ function levelClear() {
     scene.removeChild(clearScreen);
     nextLevel();
   });
-  scene.addChild(clearScreen)
+  scene.addChild(clearScreen);
 }
 
 function gameOver() {
