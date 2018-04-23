@@ -12,7 +12,7 @@ let app = new PIXI.Application({
 });
 
 PIXI.loader
-  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png"])
+  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png"])
   .add('bgmusic', 'res/bg.ogg')
   .add("cutSound", "res/cut.ogg")
   .load(setup);
@@ -100,9 +100,9 @@ function startGame() {
   gameState = "game";
   app.stage.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture))
   nextLevel();
-  scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 14, fill : 0xffffff, align : 'center'});
-  scoreText.x = 37;
-  scoreText.y = 333;
+  scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 18, fill : 0xffffff, align : 'center'});
+  scoreText.x = 30;
+  scoreText.y = 325;
   app.stage.addChild(scoreText);
   app.ticker.add(dt => gameLoop(dt));
   if (music) {
@@ -117,8 +117,8 @@ function createMusicToggle() {
   let musicToggle = new PIXI.Sprite(tex[0]);
   musicToggle.interactive = true;
   musicToggle.buttonMode = true;
-  musicToggle.x = 570;
-  musicToggle.y = 290;
+  musicToggle.x = 120;
+  musicToggle.y = 225;
   musicToggle.on("pointerdown", function() {
     music = !music;
     if (music) {
@@ -133,14 +133,19 @@ function createMusicToggle() {
 function setup() {
   let musicToggle = createMusicToggle();
   let title = new PIXI.Sprite(PIXI.loader.resources["res/title.png"].texture);
-  title.interactive = true;
-  title.buttonMode = true;
-  title.on("pointerdown", function() {
+  let startButton = new PIXI.Sprite(PIXI.loader.resources["res/startbutton.png"].texture);
+  startButton.interactive = true;
+  startButton.buttonMode = true;
+  startButton.x = 110;
+  startButton.y = 160;
+  startButton.on("pointerdown", function() {
     app.stage.removeChild(title);
     app.stage.removeChild(musicToggle);
+    app.stage.removeChild(startButton);
     startGame();
   });
   app.stage.addChild(title);
+  app.stage.addChild(startButton);
   app.stage.addChild(musicToggle);
   app.renderer.interactive = true;
   app.renderer.backgroundColor = 0xFFFFFF;
@@ -242,7 +247,7 @@ function updatePots(dt) {
       if (score < 100) {
         text = " " + text;
       }
-      scoreText.text = score;
+      scoreText.text = text;
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
       pots[p].reset();
