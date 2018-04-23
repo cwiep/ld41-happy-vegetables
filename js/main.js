@@ -202,10 +202,16 @@ function updateIngredients(dt) {
         removeIngredientImage(ingredients[i]);
         remove = true;
       }
-    } else if (ingredients[i].sprite.y > worldHeight-50 || ingredients[i].sprite.x < 0) {
+    } else if (ingredients[i].sprite.x < 0) {
       // remove ingredients when outside of screen
       removeIngredientImage(ingredients[i]);
       remove = true;
+    } else if (ingredients[i].sprite.y > worldHeight) {
+      // wrong vegetable chosen -> point loss
+      removeIngredientImage(ingredients[i]);
+      remove = true;
+      --score;
+      updateScoreDisplay();
     } else {
       // check collision with every pot
       for (let p = 0; p < pots.length; ++p) {
@@ -231,19 +237,23 @@ function updateIngredients(dt) {
   }
 }
 
+function updateScoreDisplay() {
+  let text = score;
+  if (score < 10) {
+    text = " " + text;
+  }
+  if (score < 100) {
+    text = " " + text;
+  }
+  scoreText.text = text;
+}
+
 function updatePots(dt) {
   for (let p = 0; p < pots.length; ++p) {
     pots[p].updateStatus();
     if (pots[p].isDone()) {
       score += 1;
-      let text = score;
-      if (score < 10) {
-        text = " " + text;
-      }
-      if (score < 100) {
-        text = " " + text;
-      }
-      scoreText.text = text;
+      updateScoreDisplay();
       potContainer.removeChild(pots[p].status)
       ++finishedPots;
       pots[p].reset();
