@@ -1,49 +1,25 @@
-$.INGREDIENT_IMAGES = {"potato": "res/potato.png", "onion": "res/onion.png", "carot": "res/carot.png", "brocoli": "res/brocoli.png"}
+$.INGREDIENT_IMAGES = { "potato": "res/potato.png", "onion": "res/onion.png", "carot": "res/carot.png", "brocoli": "res/brocoli.png" }
 $.INGREDIENT_TYPES = ["potato", "onion", "carot", "brocoli"];
 
 const worldWidth = 640;
 const worldHeight = 360;
 
-let app = new PIXI.Application({
-    width: worldWidth,
-    height: worldHeight,
-    transparent: true,
-    antialias: true
-});
-
-PIXI.loader
-  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png","res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
-  .add('bgmusic', 'res/bg.ogg')
-  .add("cutSound", "res/cut.ogg")
-  .add("blubSound", "res/blub.ogg")
-  .load(setup);
-
-let bgMusic;
-let cutSound;
-let blubSound;
-
-PIXI.loader.load(function(loader, resources) {
-    bgMusic = resources.bgmusic.sound;
-    bgMusic.volume = 0.05;
-    bgMusic.loop = true;
-    cutSound = resources.cutSound.sound;
-    cutSound.volume = 0.05;
-    blubSound = resources.blubSound.sound;
-    blubSound.volume = 0.05;
-});
-
 const MONSTER_TIME = 3000;
 const CUT_TIME = 300;
 const INGREDIENT_SPAWN_TIME = 1000;
 // this is a hack to avoid the edge probabilities...
-const INGREDIENTS = [{type: "potato", sprite: "res/potato.png"},
-{type: "onion", sprite: "res/onion.png"},
-{type: "carot", sprite: "res/carot.png"},
-{type: "brocoli", sprite: "res/brocoli.png"},
-{type: "potato", sprite: "res/potato.png"},
-{type: "onion", sprite: "res/onion.png"},
-{type: "carot", sprite: "res/carot.png"},
-{type: "brocoli", sprite: "res/brocoli.png"}];
+const INGREDIENTS = [{ type: "potato", sprite: "res/potato.png" },
+{ type: "onion", sprite: "res/onion.png" },
+{ type: "carot", sprite: "res/carot.png" },
+{ type: "brocoli", sprite: "res/brocoli.png" },
+{ type: "potato", sprite: "res/potato.png" },
+{ type: "onion", sprite: "res/onion.png" },
+{ type: "carot", sprite: "res/carot.png" },
+{ type: "brocoli", sprite: "res/brocoli.png" }];
+
+let bgMusic;
+let cutSound;
+let blubSound;
 
 let music = true;
 let gameState = "menu";
@@ -63,8 +39,35 @@ let potText;
 let monster;
 let monsterCounter;
 
+let app = new PIXI.Application({
+  width: worldWidth,
+  height: worldHeight,
+  transparent: true,
+  antialias: true
+});
+
 // this can only happen once!
 app.ticker.add(dt => gameLoop(dt));
+
+// attach the created app to the HTML document - create the canvas element
+document.body.appendChild(app.view);
+
+PIXI.loader
+  .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
+  .add('bgmusic', 'res/bg.ogg')
+  .add("cutSound", "res/cut.ogg")
+  .add("blubSound", "res/blub.ogg")
+  .load(setup);
+
+PIXI.loader.load(function (loader, resources) {
+  bgMusic = resources.bgmusic.sound;
+  bgMusic.volume = 0.05;
+  bgMusic.loop = true;
+  cutSound = resources.cutSound.sound;
+  cutSound.volume = 0.05;
+  blubSound = resources.blubSound.sound;
+  blubSound.volume = 0.05;
+});
 
 function setupPots() {
   pots = [];
@@ -110,7 +113,7 @@ function nextLevel() {
     // finish game
     gameState = "won";
     scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/win.png"].texture));
-    let winScore = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 36, fill : 0xffffff, align : 'center'});
+    let winScore = new PIXI.Text(score, { fontFamily: 'OpenSans', fontSize: 36, fill: 0xffffff, align: 'center' });
     winScore.x = 300;
     winScore.y = 200;
     scene.addChild(winScore);
@@ -134,7 +137,7 @@ function levelClear() {
   let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/levelclear.png"].texture);
   clearScreen.interactive = true;
   clearScreen.buttonMode = true;
-  clearScreen.on("pointerdown", function() {
+  clearScreen.on("pointerdown", function () {
     scene.removeChild(clearScreen);
     nextLevel();
   });
@@ -147,7 +150,7 @@ function gameOver() {
   let endScreen = new PIXI.Sprite(PIXI.loader.resources["res/gameover.png"].texture);
   endScreen.interactive = true;
   endScreen.buttonMode = true;
-  endScreen.on("pointerdown", function() {
+  endScreen.on("pointerdown", function () {
     scene.removeChild(endScreen);
     setup();
   });
@@ -159,36 +162,40 @@ function startGame() {
   levelCounter = -1;
   score = 0;
   scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture));
-  potText = new PIXI.Text("0", {fontFamily : 'OpenSans', fontSize: 18, fill : 0x000000, align : 'center'});
+  potText = new PIXI.Text("0", { fontFamily: 'OpenSans', fontSize: 18, fill: 0x000000, align: 'center' });
   potText.x = 70;
   potText.y = 278;
   scene.addChild(potText);
   nextLevel();
-  scoreText = new PIXI.Text(score, {fontFamily : 'OpenSans', fontSize: 18, fill : 0xffffff, align : 'center'});
+  scoreText = new PIXI.Text(score, { fontFamily: 'OpenSans', fontSize: 18, fill: 0xffffff, align: 'center' });
   scoreText.x = 30;
   scoreText.y = 325;
   scene.addChild(scoreText);
-  let potCounterSprite = new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture)
-  potCounterSprite.x = 25;
-  potCounterSprite.y = 270;
-  potCounterSprite.scale.x *= 0.3;
-  potCounterSprite.scale.y *= 0.3;
-  scene.addChild(potCounterSprite);
+  scene.addChild(createPotCounterSprite());
   if (music) {
     bgMusic.play();
   }
 }
 
+function createPotCounterSprite() {
+  let potCounterSprite = new PIXI.Sprite(PIXI.loader.resources["res/pot.png"].texture);
+  potCounterSprite.x = 25;
+  potCounterSprite.y = 270;
+  potCounterSprite.scale.x *= 0.3;
+  potCounterSprite.scale.y *= 0.3;
+  return potCounterSprite;
+}
+
 function createMusicToggle() {
   let baseTex = PIXI.loader.resources["res/music.png"].texture.baseTexture;
-  var frames = [new PIXI.Rectangle( 0, 0, 64, 64), new PIXI.Rectangle( 64, 0, 64, 64)];
-  var tex = frames.map(function(frame) { return new PIXI.Texture(baseTex, frame); });
+  var frames = [new PIXI.Rectangle(0, 0, 64, 64), new PIXI.Rectangle(64, 0, 64, 64)];
+  var tex = frames.map(function (frame) { return new PIXI.Texture(baseTex, frame); });
   let musicToggle = new PIXI.Sprite(tex[0]);
   musicToggle.interactive = true;
   musicToggle.buttonMode = true;
   musicToggle.x = 120;
   musicToggle.y = 225;
-  musicToggle.on("pointerdown", function() {
+  musicToggle.on("pointerdown", function () {
     music = !music;
     if (music) {
       musicToggle.texture = tex[0];
@@ -210,7 +217,7 @@ function setup() {
   startButton.buttonMode = true;
   startButton.x = 110;
   startButton.y = 160;
-  startButton.on("pointerdown", function() {
+  startButton.on("pointerdown", function () {
     scene.removeChild(title);
     scene.removeChild(musicToggle);
     scene.removeChild(startButton);
@@ -226,6 +233,10 @@ function setup() {
   app.renderer.view.style.display = "block";
 }
 
+//
+// methods for active level
+//
+
 function buildRandomIngredient() {
   let ing = getRandom(INGREDIENTS);
   return new $.Ingredient(10, 20, ing.type, new PIXI.Sprite(PIXI.loader.resources[ing.sprite].texture), $.Levels[levelCounter]);
@@ -238,7 +249,7 @@ function removeIngredientImage(ing) {
 
 function spawnIngredient() {
   let ing = buildRandomIngredient();
-  ing.sprite.on("pointerdown", function() {
+  ing.sprite.on("pointerdown", function () {
     ing.makeFall();
     let cut = new PIXI.Sprite(PIXI.loader.resources["res/cut.png"].texture);
     cut.x = ing.sprite.x;
@@ -248,20 +259,13 @@ function spawnIngredient() {
       cut.scale.x *= -1;
     }
     scene.addChild(cut);
-    cuts.push({t: CUT_TIME, sprite: cut, rem: false});
+    cuts.push({ t: CUT_TIME, sprite: cut, rem: false });
     cutSound.play();
   });
   ing.sprite.scale.x *= 0.75;
   ing.sprite.scale.y *= 0.75;
   ingredientContainer.addChild(ing.sprite);
   ingredients.push(ing);
-}
-
-function collide(rect1, rect2) {
-  return rect1.x < rect2.x + rect2.width &&
-   rect1.x + rect1.width > rect2.x &&
-   rect1.y < rect2.y + rect2.height &&
-   rect1.height + rect1.y > rect2.y;
 }
 
 function updateIngredients(dt) {
@@ -373,6 +377,3 @@ function gameLoop(dt) {
     }
   }
 }
-
-// attach the created app to the HTML document - create the canvas element
-document.body.appendChild(app.view);
