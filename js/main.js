@@ -270,8 +270,9 @@ function nextLevel() {
 // ----------------------------------------------------------------------------
 
 function buildRandomIngredient() {
-    let ing = getRandom(INGREDIENTS);
-    return new $.Ingredient(10, 20, ing.type, PIXI.loader.resources[ing.sprite].texture, $.Levels[levelCounter]);
+    let v = getRandom($.Levels[levelCounter].ingredients);
+    let ing = $.INGREDIENT_IMAGES[v];
+    return new $.Ingredient(10, 20, v, PIXI.loader.resources[ing].texture, $.Levels[levelCounter]);
 }
 
 function removeIngredientImage(ing) {

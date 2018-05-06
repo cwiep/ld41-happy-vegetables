@@ -11,7 +11,8 @@ $.Pot.prototype.initIngredients = function() {
   this.ingredients = [];
   this.status = new PIXI.Container();
   for (let i = 0; i < 3; ++i) {
-    let randType = getRandom($.INGREDIENT_TYPES);
+    let randType = getRandom($.Levels[levelCounter].ingredients);
+    console.log(randType);
     let tex = PIXI.loader.resources[$.INGREDIENT_IMAGES[randType]].texture;
     let sprite = new PIXI.Sprite(new PIXI.Texture(tex, new PIXI.Rectangle( 0, 0, 64, 64)));
     sprite.x = this.sprite.x + 15 + i * 30;
@@ -32,6 +33,7 @@ $.Pot.prototype.reset = function() {
 // checks whether ingredient is needed and marks appropriate one as done
 // returns true, if ingredient was needed, false otherwise
 $.Pot.prototype.check = function(ingredient) {
+    console.log("checking " + ingredient.type);
   for (let i=0; i<this.ingredients.length; ++i) {
     if (!this.ingredients[i].done && this.ingredients[i].type === ingredient.type) {
       this.ingredients[i].done = true;
