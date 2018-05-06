@@ -7,6 +7,7 @@ $.Ingredient = function(x, y, type, spriteTex, level) {
   this.sprite = new PIXI.Sprite(this.tex[0]);
   this.sprite.x = x;
   this.sprite.y = y;
+  this.vely = 0;
   this.sprite.interactive = true;
   this.sprite.buttonMode = true;
   this.gone = false;
@@ -17,7 +18,8 @@ $.Ingredient = function(x, y, type, spriteTex, level) {
 
 $.Ingredient.prototype.move = function(dt) {
   if (this.state === "fall") {
-    this.sprite.y += 0.6 * dt;
+    this.vely += 0.06 * dt;
+    this.sprite.y += this.vely;
   } else if (this.bottomLaneEnabled && this.state === "move_bottom"){
     this.sprite.x -= dt * this.speed;
   } else {
@@ -27,6 +29,7 @@ $.Ingredient.prototype.move = function(dt) {
 
 $.Ingredient.prototype.makeFall = function() {
   this.state = "fall";
+  this.vely = -10.0;
   this.sprite.texture = this.tex[1];
 }
 
