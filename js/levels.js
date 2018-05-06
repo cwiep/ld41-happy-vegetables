@@ -18,7 +18,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg1.png",
     ingredients: ["potato", "carot"],
-    hint: "Order of vegetables does not matter",
+    hint: "Order of vegetables does\nnot matter",
     loseable: false
   },
   {
@@ -40,7 +40,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg1.png",
     ingredients: ["potato", "carot", "onion", "brocoli"],
-    hint: "Reach the specified number of pots to finish a level",
+    hint: "Reach the specified number\nof pots to finish a level",
     loseable: true
   },
   {
@@ -51,7 +51,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg2.png",
     ingredients: ["potato", "carot", "onion", "brocoli"],
-    hint: "Get a second chance for each vegetable",
+    hint: "Get a second chance for\neach vegetable",
     loseable: true
   }
 ];

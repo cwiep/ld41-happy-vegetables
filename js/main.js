@@ -54,7 +54,7 @@ app.ticker.add(dt => gameLoop(dt));
 document.body.appendChild(app.view);
 
 PIXI.loader
-    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg1.png", "res/bg2.png", "res/scoreboard.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
+    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg1.png", "res/bg2.png", "res/scoreboard.png", "res/board.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
     .add('bgmusic', 'res/bg.ogg')
     .add("cutSound", "res/cut.ogg")
     .add("blubSound", "res/blub.ogg")
@@ -77,7 +77,7 @@ PIXI.loader.load(function (loader, resources) {
 function showLevelHint() {
     gameState = "showHint";
     let hintContainer = new PIXI.Container();
-    let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/levelclear.png"].texture);
+    let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/board.png"].texture);
     clearScreen.interactive = true;
     clearScreen.buttonMode = true;
     clearScreen.on("pointerdown", function () {
@@ -85,9 +85,9 @@ function showLevelHint() {
         gameState = "game";
     });
     hintContainer.addChild(clearScreen);
-    let hint = new PIXI.Text($.Levels[levelCounter].hint, { fontFamily: 'OpenSans', fontSize: 18, fill: 0x000000, align: 'center' });
+    let hint = new PIXI.Text($.Levels[levelCounter].hint, { fontFamily: 'OpenSans', fontSize: 24, fill: 0xffffff, align: 'center' });
     hint.x = 200;
-    hint.y = 200;
+    hint.y = 180;
     hintContainer.addChild(clearScreen);
     hintContainer.addChild(hint);
     scene.addChild(hintContainer);
