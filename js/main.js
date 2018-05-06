@@ -39,6 +39,7 @@ let levelContainer;
 let potText;
 let monster;
 let monsterCounter;
+let ingredientQueue = [];
 
 let app = new PIXI.Application({
     width: worldWidth,
@@ -228,6 +229,7 @@ function setupPots() {
 
 function setupIngredients() {
     ingredients = [];
+    ingredientQueue = [];
     scene.removeChild(ingredientContainer);
     ingredientContainer = new PIXI.Container();
     scene.addChild(ingredientContainer);
@@ -270,7 +272,20 @@ function nextLevel() {
 // ----------------------------------------------------------------------------
 
 function buildRandomIngredient() {
-    let v = getRandom($.Levels[levelCounter].ingredients);
+    let lvlIng = $.Levels[levelCounter].ingredients;
+    if (ingredientQueue.length == 0) {
+        for (let i=0; i<lvlIng.length; ++i) {
+            // insert each ingredient 5 times so it will deterministically pop up in the next 20 tries
+            ingredientQueue.push(lvlIng[i]);
+            ingredientQueue.push(lvlIng[i]);
+            ingredientQueue.push(lvlIng[i]);
+            ingredientQueue.push(lvlIng[i]);
+            ingredientQueue.push(lvlIng[i]);
+        }
+        // shuffle array for random order
+        ingredientQueue = shuffle(ingredientQueue);
+    }
+    let v = ingredientQueue.pop();
     let ing = $.INGREDIENT_IMAGES[v];
     return new $.Ingredient(10, 20, v, PIXI.loader.resources[ing].texture, $.Levels[levelCounter]);
 }
