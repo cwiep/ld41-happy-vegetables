@@ -1,7 +1,10 @@
 // ingredients that move across the screen and can be cut
-$.Ingredient = function(x, y, type, sprite, level) {
+$.Ingredient = function(x, y, type, spriteTex, level) {
   this.type = type;
-  this.sprite = sprite;
+  let baseTex = spriteTex.baseTexture;
+  let frames = [new PIXI.Rectangle( 0, 0, 64, 64), new PIXI.Rectangle( 64, 0, 64, 64)];
+  this.tex = frames.map(function(frame) { return new PIXI.Texture(baseTex, frame); });
+  this.sprite = new PIXI.Sprite(this.tex[0]);
   this.sprite.x = x;
   this.sprite.y = y;
   this.sprite.interactive = true;
@@ -24,6 +27,7 @@ $.Ingredient.prototype.move = function(dt) {
 
 $.Ingredient.prototype.makeFall = function() {
   this.state = "fall";
+  this.sprite.texture = this.tex[1];
 }
 
 $.Ingredient.prototype.moveToBottom = function() {
