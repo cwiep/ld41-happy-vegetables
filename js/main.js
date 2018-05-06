@@ -54,7 +54,7 @@ app.ticker.add(dt => gameLoop(dt));
 document.body.appendChild(app.view);
 
 PIXI.loader
-    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
+    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg1.png", "res/bg2.png", "res/scoreboard.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
     .add('bgmusic', 'res/bg.ogg')
     .add("cutSound", "res/cut.ogg")
     .add("blubSound", "res/blub.ogg")
@@ -73,6 +73,25 @@ PIXI.loader.load(function (loader, resources) {
 // ----------------------------------------------------------------------------
 // setup game
 // ----------------------------------------------------------------------------
+
+function showLevelHint() {
+    gameState = "showHint";
+    let hintContainer = new PIXI.Container();
+    let clearScreen = new PIXI.Sprite(PIXI.loader.resources["res/levelclear.png"].texture);
+    clearScreen.interactive = true;
+    clearScreen.buttonMode = true;
+    clearScreen.on("pointerdown", function () {
+        scene.removeChild(hintContainer);
+        gameState = "game";
+    });
+    hintContainer.addChild(clearScreen);
+    let hint = new PIXI.Text($.Levels[levelCounter].hint, { fontFamily: 'OpenSans', fontSize: 18, fill: 0x000000, align: 'center' });
+    hint.x = 200;
+    hint.y = 200;
+    hintContainer.addChild(clearScreen);
+    hintContainer.addChild(hint);
+    scene.addChild(hintContainer);
+}
 
 function levelClear() {
     for (let c = 0; c < cuts.length; ++c) {
@@ -136,15 +155,19 @@ function startGame() {
     gameState = "game";
     levelCounter = -1;
     score = 0;
-    scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg.png"].texture));
+    scene.addChild(new PIXI.Sprite(PIXI.loader.resources["res/bg2.png"].texture));
+    let scoreBoard = new PIXI.Sprite(PIXI.loader.resources["res/scoreboard.png"].texture)
+    scoreBoard.x = 10;
+    scoreBoard.y = 300;
+    scene.addChild(scoreBoard);
     potText = new PIXI.Text("0", { fontFamily: 'OpenSans', fontSize: 18, fill: 0x000000, align: 'center' });
     potText.x = 615;
     potText.y = 325;
     scene.addChild(potText);
     nextLevel();
     scoreText = new PIXI.Text(score, { fontFamily: 'OpenSans', fontSize: 18, fill: 0xffffff, align: 'center' });
-    scoreText.x = 30;
-    scoreText.y = 325;
+    scoreText.x = 40;
+    scoreText.y = 335;
     scene.addChild(scoreText);
     scene.addChild(createPotCounterSprite());
     if (music) {
@@ -238,7 +261,7 @@ function nextLevel() {
         setupIngredients();
         setupPots();
         addMonster();
-        gameState = "game";
+        showLevelHint();
     }
 }
 
@@ -303,6 +326,8 @@ function updateIngredients(dt) {
             for (let p = 0; p < pots.length; ++p) {
                 if (!ingredients[i].gone && collide(ingredients[i].sprite, pots[p].sprite)) {
                     if (pots[p].check(ingredients[i])) {
+                        score += 1;
+                        updateScoreDisplay();
                         removeIngredientImage(ingredients[i]);
                         remove = true;
                         blubSound.play();
@@ -339,8 +364,6 @@ function updatePots(dt) {
     for (let p = 0; p < pots.length; ++p) {
         pots[p].updateStatus();
         if (pots[p].isDone()) {
-            score += 1;
-            updateScoreDisplay();
             potContainer.removeChild(pots[p].status)
             ++finishedPots;
             potText.text = $.Levels[levelCounter].targetPots - finishedPots;
