@@ -10,6 +10,6 @@ MIT
 ## Resources
 Music: [Master of the Feast by Kevin MacLeod](http://freemusicarchive.org/music/Kevin_MacLeod/Best_of_2014_1461/Master_of_the_Feast)
 
-Cut sound: [Freesound](https://freesound.org/people/Abyssmal/sounds/35213/)
+Cut sound by Abyssmal: [Freesound](https://freesound.org/people/Abyssmal/sounds/35213/)
 
 Images and blub.ogg: [Creative Commons Attribution](https://creativecommons.org/licenses/by/3.0/)
