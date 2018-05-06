@@ -319,8 +319,10 @@ function updateIngredients(dt) {
             // wrong vegetable chosen -> point loss
             removeIngredientImage(ingredients[i]);
             remove = true;
-            --score;
-            updateScoreDisplay();
+            if ($.Levels[levelCounter].loseable) {
+                --score;
+                updateScoreDisplay();
+            }
         } else {
             // check collision with every pot
             for (let p = 0; p < pots.length; ++p) {

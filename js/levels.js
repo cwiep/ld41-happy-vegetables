@@ -18,7 +18,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg1.png",
     ingredients: ["potato", "carot"],
-    hint: "Order of vegetables does\nnot matter",
+    hint: "The order of vegetables\ndoes not matter",
     loseable: false
   },
   {
@@ -29,7 +29,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg1.png",
     ingredients: ["potato", "carot", "onion"],
-    hint: "Don't waste vegetables",
+    hint: "Don't cut the wrong\nvegetables",
     loseable: true
   },
   {
