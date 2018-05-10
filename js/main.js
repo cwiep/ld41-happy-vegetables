@@ -240,8 +240,9 @@ function addMonster() {
     if (monster) {
         scene.removeChild(monster.sprite);
     }
-    if ($.Levels[levelCounter].monster) {
-        monster = new $.Monster(400, 102);
+    let level = $.Levels[levelCounter];
+    if (level.monster) {
+        monster = new $.Monster(400, 102, level.monsterSpeed, level.monsterStunTime, level.monsterTimeToEat);
         scene.addChild(monster.sprite);
     }
 }
@@ -339,8 +340,8 @@ function updateIngredients(dt) {
                 --score;
             }
         } else {
-            if (monster && monster.canEat) {
-                if (!ingredients[i].gone && collide(ingredients[i].sprite, monster.sprite)) {
+            if (monster && monster.state === "waitEat") {
+                if (!ingredients[i].gone && ingredients[i].state !== "fall" && collide(ingredients[i].sprite, monster.sprite)) {
                     monster.eat(ingredients[i].type);
                     score -= 1;
                     removeIngredientImage(ingredients[i]);

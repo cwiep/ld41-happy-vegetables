@@ -1,4 +1,4 @@
-$.Monster = function(x, y) {
+$.Monster = function(x, y, speed, stunTime, timeToEat) {
     let baseTex = PIXI.loader.resources["res/monster.png"].texture.baseTexture;
     let frames = [new PIXI.Rectangle( 0, 0, 64, 64), new PIXI.Rectangle( 64, 0, 64, 64), new PIXI.Rectangle(128, 0, 64, 64)];
     this.tex = frames.map(function(frame) { return new PIXI.Texture(baseTex, frame); });
@@ -7,60 +7,58 @@ $.Monster = function(x, y) {
     this.sprite.buttonMode = true;
     this.sprite.x = x;
     this.sprite.y = y;
-    this.stunTime = 4000;
-    this.stunTimer = 0;
     let me = this;
-    this.velx = -0.1;
-    this.canEatTimer = 5000;
-    this.canEat = false;
-    this.eatingTimer = 0;
+    this.velx = speed; // -0.1 is quite good
+    this.state = "move";
+    this.timeToEat = timeToEat;
+    this.stateTimer = this.timeToEat;
     this.sprite.on("pointerdown", function() {
-        if (me.eatingTimer == 0) {
-            me.stunTimer = me.stunTime;
+        if (me.state === "move") {
+            me.state = "stun";
+            me.stateTimer = stunTime;
         }
     });
 }
 
 $.Monster.prototype.update = function(dt) {
-    if (this.eatingTimer > 0) {
-        // eating animation was started
-        this.sprite.texture = this.tex[1];
-        this.eatingTimer -= dt;
-        // we need 0 to be the special case of the timer not being active! this feels so dirty...
-        if (this.eatingTimer == 0) {
-            this.eatingTimer = -1;
-        }
-    } else if (this.eatingTimer < 0) {
-        // eating animation has finished
-        this.eatingTimer = 0;
+    this.stateTimer -= dt;
+    if (this.state === "move") {
+        // move left right
         this.sprite.texture = this.tex[0];
-        this.eatTimer = 5000;
-    } else {
-        if (this.stunTimer <= 0) {
-            // monster is not stunned
-
-            this.canEatTimer -= dt;
-            if (this.canEatTimer < 0) {
-                this.canEat = true;
-            }
-
-            // move left right
-            this.sprite.texture = this.tex[0];
-            this.sprite.x += this.velx * dt;
-            if (this.sprite.x < 0 || this.sprite.x  > 640-64) {
-                this.velx = -this.velx;
-            }
-            
-        } else {
-            // monster is stunned
-            this.stunTimer -= dt;
-            this.sprite.texture = this.tex[2];
+        this.move(dt);
+        // count down until ready to eat
+        if (this.stateTimer < 0) {
+            this.stateTimer = 0;
+            this.state = "waitEat";
         }
+    } else if (this.state === "stun") {
+        this.sprite.texture = this.tex[2];
+        if (this.stateTimer < 0) {
+            this.state = "move";
+            this.stateTimer = this.timeToEat;
+        }
+    } else if (this.state === "waitEat") {
+        this.sprite.texture = this.tex[0];
+        this.move(dt);
+    } else if (this.state === "eat") {
+        this.sprite.texture = this.tex[1];
+        if (this.stateTimer < 0) {
+            this.state = "move";
+            this.stateTimer = this.timeToEat;
+        }
+    }
+}
+
+$.Monster.prototype.move = function(dt) {
+    // move left right
+    this.sprite.x += this.velx * dt;
+    if (this.sprite.x < 0 || this.sprite.x  > 640-64) {
+        this.velx = -this.velx;
     }
 }
 
 $.Monster.prototype.eat = function(ingredientType) {
     console.log("eating " + ingredientType);
-    this.canEat = false;
-    this.eatingTimer = 250;
+    this.state = "eat";
+    this.stateTimer = 250;
 }
