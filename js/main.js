@@ -287,7 +287,7 @@ function buildRandomIngredient() {
     }
     let v = ingredientQueue.pop();
     let ing = $.INGREDIENT_IMAGES[v];
-    return new $.Ingredient(10, 20, v, PIXI.loader.resources[ing].texture, $.Levels[levelCounter]);
+    return new $.Ingredient(1, 15, v, PIXI.loader.resources[ing].texture, $.Levels[levelCounter]);
 }
 
 function removeIngredientImage(ing) {
@@ -310,8 +310,8 @@ function spawnIngredient() {
         cuts.push({ t: CUT_TIME, sprite: cut, rem: false });
         cutSound.play();
     });
-    ing.sprite.scale.x *= 0.75;
-    ing.sprite.scale.y *= 0.75;
+    ing.sprite.scale.x *= 0.9;
+    ing.sprite.scale.y *= 0.9;
     ingredientContainer.addChild(ing.sprite);
     ingredients.push(ing);
 }

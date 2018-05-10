@@ -36,6 +36,6 @@ $.Ingredient.prototype.makeFall = function() {
 $.Ingredient.prototype.moveToBottom = function() {
   if (this.state !== "move_bottom") {
     this.state = "move_bottom";
-    this.sprite.y += 110;
+    this.sprite.y += 105;
   }
 }
