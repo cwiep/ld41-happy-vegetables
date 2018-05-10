@@ -260,9 +260,9 @@ function nextLevel() {
         // load normal level
         finishedPots = 0;
         potText.text = $.Levels[levelCounter].targetPots;
+        addMonster();
         setupIngredients();
         setupPots();
-        addMonster();
         showLevelHint();
     }
 }
@@ -337,15 +337,22 @@ function updateIngredients(dt) {
             remove = true;
             if ($.Levels[levelCounter].loseable) {
                 --score;
-                updateScoreDisplay();
             }
         } else {
+            if (monster && monster.canEat) {
+                if (!ingredients[i].gone && collide(ingredients[i].sprite, monster.sprite)) {
+                    monster.eat(ingredients[i].type);
+                    score -= 1;
+                    removeIngredientImage(ingredients[i]);
+                    remove = true;
+                    blubSound.play();
+                }
+            }
             // check collision with every pot
             for (let p = 0; p < pots.length; ++p) {
                 if (!ingredients[i].gone && collide(ingredients[i].sprite, pots[p].sprite)) {
                     if (pots[p].check(ingredients[i])) {
                         score += 1;
-                        updateScoreDisplay();
                         removeIngredientImage(ingredients[i]);
                         remove = true;
                         blubSound.play();
@@ -353,6 +360,7 @@ function updateIngredients(dt) {
                 }
             }
         }
+        updateScoreDisplay();
     }
     if (remove) {
         var f = function (ing) {
