@@ -13,7 +13,7 @@ $.Monster = function(x, y, speed, stunTime, timeToEat) {
     this.timeToEat = timeToEat;
     this.stateTimer = this.timeToEat;
     this.sprite.on("pointerdown", function() {
-        if (me.state === "move") {
+        if (me.state === "move" || me.state === "waitEat") {
             me.state = "stun";
             me.stateTimer = stunTime;
         }
