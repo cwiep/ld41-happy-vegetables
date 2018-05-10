@@ -58,7 +58,7 @@ app.ticker.add(dt => gameLoop(dt));
 document.body.appendChild(app.view);
 
 PIXI.loader
-    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cut.png", "res/levelclear.png", "res/bg1.png", "res/bg2.png", "res/scoreboard.png", "res/board.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
+    .add(["res/music.png", "res/title.png", "res/potato.png", "res/onion.png", "res/carot.png", "res/brocoli.png", "res/pot.png", "res/cover.png", "res/cut.png", "res/levelclear.png", "res/bg1.png", "res/bg2.png", "res/scoreboard.png", "res/board.png", "res/startbutton.png", "res/gameover.png", "res/win.png", "res/monster.png"])
     .add('bgmusic', 'res/bg.ogg')
     .add("cutSound", "res/cut.ogg")
     .add("blubSound", "res/blub.ogg")
@@ -403,6 +403,11 @@ function updatePots(dt) {
     for (let p = 0; p < pots.length; ++p) {
         pots[p].updateStatus();
         if (pots[p].isDone()) {
+            let cover = new PIXI.Sprite(PIXI.loader.resources["res/cover.png"].texture);
+            cover.x = pots[p].sprite.x;
+            cover.y = pots[p].sprite.y;
+            potContainer.addChild(cover);
+            setTimeout(function(){potContainer.removeChild(cover);}, 500);
             potContainer.removeChild(pots[p].status)
             ++finishedPots;
             potSound.play();
