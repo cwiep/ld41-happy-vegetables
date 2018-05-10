@@ -22,6 +22,7 @@ let cutSound;
 let blubSound;
 let potSound;
 let punchSound;
+let biteSound;
 
 let music = true;
 let gameState = "menu";
@@ -63,6 +64,7 @@ PIXI.loader
     .add("blubSound", "res/blub.ogg")
     .add("potSound", "res/pot.ogg")
     .add("punchSound", "res/punch.ogg")
+    .add("biteSound", "res/bite.ogg")
     .load(setup);
 
 PIXI.loader.load(function (loader, resources) {
@@ -77,6 +79,8 @@ PIXI.loader.load(function (loader, resources) {
     potSound.volume = 0.1;
     punchSound = resources.punchSound.sound;
     punchSound.volume = 0.05;
+    biteSound = resources.biteSound.sound;
+    biteSound.volume = 0.3;
 });
 
 // ----------------------------------------------------------------------------
@@ -354,7 +358,7 @@ function updateIngredients(dt) {
                     score -= 1;
                     removeIngredientImage(ingredients[i]);
                     remove = true;
-                    blubSound.play();
+                    biteSound.play();
                 }
             }
             // check collision with every pot
