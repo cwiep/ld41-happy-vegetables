@@ -256,6 +256,8 @@ function addMonster() {
     if (level.monster) {
         monster = new $.Monster(400, 102, level.monsterSpeed, level.monsterStunTime, level.monsterTimeToEat);
         scene.addChild(monster.sprite);
+    } else {
+        monster = undefined;
     }
 }
 
