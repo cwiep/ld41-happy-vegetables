@@ -20,6 +20,8 @@ const INGREDIENTS = [{ type: "potato", sprite: "res/potato.png" },
 let bgMusic;
 let cutSound;
 let blubSound;
+let potSound;
+let punchSound;
 
 let music = true;
 let gameState = "menu";
@@ -59,6 +61,8 @@ PIXI.loader
     .add('bgmusic', 'res/bg.ogg')
     .add("cutSound", "res/cut.ogg")
     .add("blubSound", "res/blub.ogg")
+    .add("potSound", "res/pot.ogg")
+    .add("punchSound", "res/punch.ogg")
     .load(setup);
 
 PIXI.loader.load(function (loader, resources) {
@@ -69,6 +73,10 @@ PIXI.loader.load(function (loader, resources) {
     cutSound.volume = 0.05;
     blubSound = resources.blubSound.sound;
     blubSound.volume = 0.05;
+    potSound = resources.potSound.sound;
+    potSound.volume = 0.1;
+    punchSound = resources.punchSound.sound;
+    punchSound.volume = 0.05;
 });
 
 // ----------------------------------------------------------------------------
@@ -393,6 +401,7 @@ function updatePots(dt) {
         if (pots[p].isDone()) {
             potContainer.removeChild(pots[p].status)
             ++finishedPots;
+            potSound.play();
             potText.text = $.Levels[levelCounter].targetPots - finishedPots;
             pots[p].reset();
             potContainer.addChild(pots[p].status)

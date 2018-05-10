@@ -14,6 +14,7 @@ $.Monster = function(x, y, speed, stunTime, timeToEat) {
     this.stateTimer = this.timeToEat;
     this.sprite.on("pointerdown", function() {
         if (me.state === "move" || me.state === "waitEat") {
+            punchSound.play();
             me.state = "stun";
             me.stateTimer = stunTime;
         }
