@@ -88,7 +88,7 @@ $.Levels = [
     monster: false,
     bg: "res/bg2.png",
     ingredients: ["potato", "carot", "onion", "brocoli"],
-    hint: "All the pots",
+    hint: "More pots",
     loseable: true
   },
   // 9
