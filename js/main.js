@@ -88,7 +88,7 @@ function showLevelHint() {
     hintContainer.addChild(clearScreen);
     let hint = new PIXI.Text($.Levels[levelCounter].hint, { fontFamily: 'OpenSans', fontSize: 24, fill: 0xffffff, align: 'center' });
     hint.x = 200;
-    hint.y = 180;
+    hint.y = 160;
     hintContainer.addChild(clearScreen);
     hintContainer.addChild(hint);
     scene.addChild(hintContainer);
